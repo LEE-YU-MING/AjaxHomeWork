@@ -1,0 +1,112 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="text-center">
+    <h1 class="display-4">Welcome</h1>
+    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+</div>
+<ul id="xxx">
+</ul>
+
+@section Scripts{
+    <script>
+        const emps =
+        [{ "name": "Tom", "workYears": 3, "salary": 35000 },
+        { "name": "Jack", "workYears": 5, "salary": 40000 },
+        { "name": "Mary", "workYears": 7, "salary": 45000 }];
+        const xx = document.querySelector("#xxx");
+        
+        const docFrag = document.createDocumentFragment();
+        // 空物件
+        //ajax 老師第一種寫法
+        emps.forEach((elem, index) => {
+            const litag = document.createElement("li");
+            const litext = document.createTextNode
+                (`Name: ${elem.name}, WorkYears: ${elem.workYears}, 
+                    Salary: ${elem.salary}`);
+            litag.appendChild(litext);
+            docFrag.appendChild(litag);
+        })
+            xx.appendChild(docFrag);
+
+        //js老師教的寫法
+
+        // let html = "";
+        // emps.forEach((elem,index) => {
+
+        //     const string = `<li id=emp${index}> Name: ${elem.name}, WorkYears: 
+        //     ${elem.workYears}, Salary: ${elem.salary}</li>`;
+        //     html += string;
+        // })
+        // xx.innerHTML = html;
+
+        //ajax老師教的第二種寫法 解構賦值,再用join串接陣列
+
+        // const empHtml = emps.map((elem) => {
+        //     // const { name, workYears, salary } = elem;
+        //     // return (`<li>${name}, ${workYears}, ${salary}</li>`)
+        //     return (`<li>${elem.name}, ${elem.workYears}, 
+        //     ${elem.salary}</li>`);
+        // })
+
+        //  xx.innerHTML = empHtml.join("");
+
+        // function show(data) {
+        //     const promise = new Promise((resolve, reject)=> {
+        //         setTimeout(() => {
+        //             resolve(data);
+        //         },1000)
+        //     })
+        //     return promise;
+        // }
+
+        // (anync()=> {
+        //      let data = await show("A");
+        //      console.log(data);
+        //       data = await sho2("B");
+        //     console.log(data);
+        //       data = await show("C");
+        //         console.log(data);
+        //             })();
+
+
+
+
+        // show("A")
+        //     .then(data => {
+        //         console.log(data);
+        //         return show("B");
+        //     })
+        //     .then(data => {
+        //         console.log(data);
+        //         return show("C");
+        //     })
+        //     .then(data => {
+        //         console.log(data);
+        //     })
+
+
+
+        // const promise = new Promise((resolve, reject) => {
+        //     const nums = Math.random() > 0.5 ? 1 : 0;
+        //     if (nums) {
+        //         resolve("執行成功");
+        //     }
+        //     else {
+        //         reject(Error("發生錯誤了"));
+        //     }
+        // });
+
+        // promise
+        //     .then((data) => {
+        //         console.log(data);
+        //     })
+        //     .catch((Error) => {
+        //         console.log(Error);
+        //     })
+        //     .finally(() => {
+        //         console.log("END");
+        //     });
+    </script>
+}
