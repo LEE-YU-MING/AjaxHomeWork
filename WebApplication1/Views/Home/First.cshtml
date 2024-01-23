@@ -1,0 +1,91 @@
+﻿
+@{
+    ViewData["Title"] = "First";
+}
+
+<h1>First</h1>
+<button id="button1" class="btn btn-primary">AjaxStart</button>
+<button id="button2" class="btn btn-primary">AjaxClose</button>
+<img src="~/img/Moving blocks.gif" id="imgLoading" style="display:none"/>
+<div id="div1" class="alert"></div>
+
+@section Scripts{
+
+<script>
+    const btn = document.querySelector("#button1");
+    const btnclose = document.querySelector("#button2");
+    const imgLoader = document.querySelector("#imgLoading");    
+    const div1 = document.querySelector("#div1");
+    let abortcontroller;
+        btnclose.addEventListener("click", () => {
+        if (abortcontroller) {
+            abortcontroller.abort();
+        }
+    })
+
+    btn.addEventListener("click", async () => {
+        try {
+            // setTimeout(() => { abortcontroller.abort(); }, 5000);
+            //顯示執行中的圖示
+            imgLoader.style.display = "inline";
+            //停用按鈕
+            btn.setAttribute("disabled","disabled")
+
+            //建立AbortController 物件
+             abortcontroller = new AbortController();
+              
+             const signal = abortcontroller.signal;
+
+            // const response = await fetch('@Url.Content("~/api/index")')
+            //沒有加取消異步事件時
+            const response = await fetch('@Url.Content("~/api/index")', { signal });
+            if (!response.ok) {
+                throw new Error(response.status)
+            }
+            const data = await response.text()
+            div1.innerHTML = data;
+        } catch (err) {
+            div1.innerHTML = err;
+        } finally {
+            imgLoader.style.display = "none";
+            btn.removeAttribute('disabled');
+        }
+        
+        // promise resolve() reject 
+        // fetch('/api/index')
+        // fetch('@Url.Content("~/api/index")')
+        //     .then(response => {
+        //         console.log(response);
+        //             console.log(response.status);
+        //         response.headers.forEach((value, name) => {
+        //             console.log(`${name}: ${value}`);
+        //         })
+        //     })
+
+
+            // .then(response => {
+            //     // console.log(response);
+            //     // console.log(response.text())
+            //     //取得promise.body 物件
+            //     //因為我們回傳的是Context所以用text()
+            //     //有其他檔案如 img/file 要用其他方法
+            //      return response.text()
+            // })
+            // .then(data => {
+            //     div1.innerHTML = data;
+            // })
+     })
+
+     //IIFE 立即調用函數
+        // (async () => {
+        //     try {
+        //         const response=await fetch('url')
+        //          const data=respinse.text()
+        //     } catch {
+        //         throw new err
+        //     }
+
+        // })()
+        //最後加()是代表IIFE
+</script>
+}

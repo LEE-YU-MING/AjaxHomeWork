@@ -1,0 +1,78 @@
+﻿
+@{
+    ViewData["Title"] = "Address";
+}
+
+<h1>Address</h1>
+
+<select id="select1">
+    <option value="1"></option>
+    <option value="2"></option>
+    <option value="3"></option>
+    <option value="4"></option>
+</select>
+<select id="select2">
+</select>
+<select id="select3">
+</select>
+<div id="div"></div>
+@section Scripts{
+    <script>
+        const selectCity = document.querySelector("#select1");
+        const selectSite = document.querySelector("#select2");
+        const selectRoad = document.querySelector("#select3");
+        const divid = document.querySelector("#div");
+        let cityname;
+        let roadname;
+        (async () => {
+            try {
+
+                const cityurl = '@Url.Content("~/API/Cities")'
+                const cityResponse = await fetch(cityurl);
+
+                //如果有錯誤
+                if (!cityResponse.ok) throw new Error(cityResponse.status);
+
+                const cities = await cityResponse.json();
+                const optcities = cities.map(city => `<option value="${city}">${city}</option>`);
+                selectCity.innerHTML = optcities.join("");
+
+            } catch (err) {
+                divid.innerHTML = err;
+            } finally {
+
+            }
+        })();
+        selectCity.addEventListener("change", async (elem) => {
+            console.log(elem.target.value);
+            cityname = elem.target.value;
+
+            let siteurl = '@Url.Content("~/API/Districts")'
+            cityname == null ? siteurl : siteurl = siteurl + `?city=${cityname}`;
+
+            console.log(siteurl);
+            const siteResponse = await fetch(siteurl);
+            if (!siteResponse.ok) throw new Error(siteResponse.status);
+            const sites = await siteResponse.json();
+            const optsites = sites.map(site => `<option value="${site}">${site}</option>`);
+            console.log(sites);
+            selectSite.innerHTML = optsites;
+        })
+        selectSite.addEventListener("change", async (elem) => {
+            console.log(elem.target.value);
+            sitename = elem.target.value;
+
+            let roadurl = '@Url.Content("~/API/Roads")'
+            sitename == null ? roadurl : roadurl = roadurl + `?site=${sitename}`;
+
+            console.log(roadurl);
+            const roadResponse = await fetch(roadurl);
+            if (!roadResponse.ok) throw new Error(roadResponse.status);
+            const roads = await roadResponse.json();
+            const optroads = roads.map(road => `<option value="${road}">${road}</option>`);
+            console.log(roads);
+            selectRoad.innerHTML = optroads;
+        })
+
+    </script>
+}

@@ -1,0 +1,106 @@
+﻿
+@{
+    ViewData["Title"] = "Index";
+}
+<form>
+    <fieldset>
+    <legend>個人資料<em>(必填)</em></legend>
+    <div class="mb-3">
+        <label>姓名:</label>
+        <br />
+        <input type="text" id="name" name="name" placeholder="Guest" maxlength="15"/>
+        <div id="namecheck">warning</div>
+    </div>
+    <div class="mb-3">
+        <label>電子郵件:</label>
+        <br />
+            <input type="email" id="email" name="email" placeholder="Email" maxlength="20" />
+    </div>
+    <div class="mb-3">
+        <label>年紀:</label>
+        <br />
+            <input type="number" id="age" name="age" placeholder="age" maxlength="4" />
+    </div>
+    <div class="submit mb-3">
+        <input type="button" value="送出" class="btn btn-primary"/>
+    </div>
+    </fieldset>
+</form>
+<div id="output" class="p-5"></div>
+
+@section Scripts{
+    <script>
+        const customername = document.querySelector("#name");
+        const email = document.querySelector("#email");
+        const age = document.querySelector("#age");
+        const submit = document.querySelector(".submit");
+        const namecheck = document.querySelector("#namecheck");
+        const divoutput = document.querySelector("#output");
+        let nameinput;
+        
+        customername.addEventListener("keyup",async (elem) => {
+            nameinput = elem.target.value;
+            try {
+                const nameurl = '@Url.Content("~/API/CheckAccount")' + `?name=${nameinput}`;
+                const nameResponse = await fetch(nameurl);
+                
+                //檢查連線
+                if (!nameResponse.ok) throw new Error(nameResponse.status);
+                //取得name
+                const name = await nameResponse.text();
+                console.log(name);
+                console.log(typeof(name));
+                if (name=="True") {
+                    namecheck.style.color = "red";
+                    namecheck.innerHTML = "帳號已存在";
+                } else if(name=="False") {
+                    namecheck.style.color = "blue";
+                    namecheck.innerHTML = "帳號可使用";
+                }
+            } catch {
+
+            } finally {
+
+            }
+         })
+        submit.addEventListener("click", () => {
+            const outputname = customername.value
+                let innerhtml= `Hello ${customername.value},${age.value}歲了, 電子郵件是${email.value}.`;
+            console.log(innerhtml);
+            divoutput.innerHTML = innerhtml;
+            divoutput.style.background = "lightblue";
+        });
+
+        //     nameinput = elem.target.value;
+        //     console.log(123);
+        // })
+        // (async () => {
+        //     try {
+                
+        //         console.log(nameinput);
+        //         // const nameurl = '@Url.Content("~/API/CheckAccount")'+?`name=${nameinput}`;
+        //         const nameurl = '@Url.Content("~/API/CheckAccount")';
+        //         const nameResponse = await fetch(nameurl);
+        //         console.log(nameResponse.text());
+
+        //         if (!nameResponse.ok) throw new Error(nameResponse.status);
+
+        //         const name = await nameResponse.text();
+        //         if (name !== null) {
+        //             namecheck.innerHTML = "帳號已存在";
+        //         } else {
+        //             namecheck.innerHTML = "帳號可使用";
+        //         }
+
+        //         submit.addEventListener("click", () => {
+        //             console.log("33");
+        //         })
+
+        //     } catch(err) {
+
+        //     } finally {
+
+        //     }
+
+    </script>
+}
