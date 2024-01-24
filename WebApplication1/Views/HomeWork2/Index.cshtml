@@ -2,27 +2,27 @@
 @{
     ViewData["Title"] = "Index";
 }
-<form>
+<form id="userForm">
     <fieldset>
     <legend>個人資料<em>(必填)</em></legend>
     <div class="mb-3">
-        <label>姓名:</label>
+        <label for="username">姓名:</label>
         <br />
-        <input type="text" id="name" name="name" placeholder="Guest" maxlength="15"/>
-        <div id="namecheck">warning</div>
+        <input type="text" id="username" name="Name" placeholder="Guest" maxlength="15"/>
+        <div id="namecheck"></div>
     </div>
     <div class="mb-3">
-        <label>電子郵件:</label>
+        <label for="useremail">電子郵件:</label>
         <br />
-            <input type="email" id="email" name="email" placeholder="Email" maxlength="20" />
+            <input type="email" id="useremail" name="Email" placeholder="Email" maxlength="20" />
     </div>
     <div class="mb-3">
-        <label>年紀:</label>
+        <label for="userage">年紀:</label>
         <br />
-            <input type="number" id="age" name="age" placeholder="age" maxlength="4" />
+            <input type="number" id="userage" name="Age" placeholder="age" maxlength="4" />
     </div>
-    <div class="submit mb-3">
-        <input type="button" value="送出" class="btn btn-primary"/>
+    <div class="mb-3">
+        <input type="submit" id="submit" value="送出" class="btn btn-primary"/>
     </div>
     </fieldset>
 </form>
@@ -30,10 +30,10 @@
 
 @section Scripts{
     <script>
-        const customername = document.querySelector("#name");
-        const email = document.querySelector("#email");
-        const age = document.querySelector("#age");
-        const submit = document.querySelector(".submit");
+        const customername = document.querySelector("#username");
+        // const email = document.querySelector("#useremail");
+        // const age = document.querySelector("#userage");
+        const submit = document.querySelector("#submit");
         const namecheck = document.querySelector("#namecheck");
         const divoutput = document.querySelector("#output");
         let nameinput;
@@ -41,7 +41,7 @@
         customername.addEventListener("keyup",async (elem) => {
             nameinput = elem.target.value;
             try {
-                const nameurl = '@Url.Content("~/API/CheckAccount")' + `?name=${nameinput}`;
+                const nameurl = `@Url.Content("~/API/CheckAccount")?name=${nameinput}`;
                 const nameResponse = await fetch(nameurl);
                 
                 //檢查連線
@@ -49,7 +49,7 @@
                 //取得name
                 const name = await nameResponse.text();
                 console.log(name);
-                console.log(typeof(name));
+
                 if (name=="True") {
                     namecheck.style.color = "red";
                     namecheck.innerHTML = "帳號已存在";
@@ -63,44 +63,42 @@
 
             }
          })
-        submit.addEventListener("click", () => {
-            const outputname = customername.value
-                let innerhtml= `Hello ${customername.value},${age.value}歲了, 電子郵件是${email.value}.`;
-            console.log(innerhtml);
-            divoutput.innerHTML = innerhtml;
-            divoutput.style.background = "lightblue";
+         const theform=document.querySelector("#userForm")
+
+        submit.addEventListener("click",async (elem) => {
+            //停止submit按鈕 click時就會送出並關閉表單的行為
+            elem.preventDefault(); 
+
+            //透過FormData物件讀取資料
+            const formData = new FormData(theform);
+            // formData.append("city","中壢")
+            // for (const pair of formData.entries()) {
+            //     console.log(pair[0])
+            //     console.log(pair[1])
+            // }
+            //檢查有沒有塞進去
+            
+            try {
+                //將formData資料傳送到server端
+                const nameurl = '@Url.Content("~/API/Register")';
+                const nameResponse = await fetch(nameurl,{
+                    method:'POST',
+                    //要包成物件用封包傳遞必須改成POST
+                    body:formData
+                    //把資料塞到body裡面
+                });
+                //檢查連線
+                if (!nameResponse.ok) throw new Error(nameResponse.status);
+                //取得name
+                const datas = await nameResponse.text();
+                //顯示在畫面上
+                divoutput.innerHTML = datas;
+                divoutput.style.background = "lightblue";
+            } catch {
+
+            } finally {
+
+            }
         });
-
-        //     nameinput = elem.target.value;
-        //     console.log(123);
-        // })
-        // (async () => {
-        //     try {
-                
-        //         console.log(nameinput);
-        //         // const nameurl = '@Url.Content("~/API/CheckAccount")'+?`name=${nameinput}`;
-        //         const nameurl = '@Url.Content("~/API/CheckAccount")';
-        //         const nameResponse = await fetch(nameurl);
-        //         console.log(nameResponse.text());
-
-        //         if (!nameResponse.ok) throw new Error(nameResponse.status);
-
-        //         const name = await nameResponse.text();
-        //         if (name !== null) {
-        //             namecheck.innerHTML = "帳號已存在";
-        //         } else {
-        //             namecheck.innerHTML = "帳號可使用";
-        //         }
-
-        //         submit.addEventListener("click", () => {
-        //             console.log("33");
-        //         })
-
-        //     } catch(err) {
-
-        //     } finally {
-
-        //     }
-
     </script>
 }

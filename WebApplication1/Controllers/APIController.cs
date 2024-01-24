@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System;
 using WebApplication1.Models;
+using WebApplication1.Models.Dtos;
 
 namespace WebApplication1.Controllers
 {
@@ -28,16 +29,13 @@ namespace WebApplication1.Controllers
             //Content (string content, string contentType,                        System.Text.Encoding contentEncoding);
 
         }
-        //public IActionResult CheckAccount(string? name)
-        //{
-        //    var membername = _dbContext.Members.Where(x => x.Name == name).Select(x=>x.Name).ToString();
-        //    return Content($"{membername}");
-        //}
+
         public IActionResult CheckAccount(string name)
         {
             var membername = _dbContext.Members.Where(x => x.Name == name).Select(x => x.Name).Any();
             return Content($"{membername}");
         }
+        
         //[HttpPost]
         public IActionResult Cities()
         {
@@ -72,13 +70,13 @@ namespace WebApplication1.Controllers
 
             return NotFound();
         }
-        public IActionResult Register(string name,int age=18) 
+        public IActionResult Register(UserDto dto) 
         {
-            if (string.IsNullOrEmpty(name))
+            if (string.IsNullOrEmpty(dto.Name))
             {
-                name = "Guest";
+                dto.Name = "Guest";
             }
-            return Content($"Hello!!{name},You are {age} years old.");
+            return Content($"Hello!!{dto.Name},You are {dto.Age} years old.Your Email is {dto.Email}");
         }
     }
 }
