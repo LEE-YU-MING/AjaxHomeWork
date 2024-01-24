@@ -21,6 +21,11 @@
         <br />
             <input type="number" id="userage" name="Age" placeholder="age" maxlength="4" />
     </div>
+        <div class="mb-3">
+            <label for="userimg">頭像:</label>
+            <br />
+            <input type="file" id="userimg" name="Image" />
+        </div>
     <div class="mb-3">
         <input type="submit" id="submit" value="送出" class="btn btn-primary"/>
     </div>
@@ -40,6 +45,8 @@
         
         customername.addEventListener("keyup",async (elem) => {
             nameinput = elem.target.value;
+
+            console.log(nameinput);
             try {
                 const nameurl = `@Url.Content("~/API/CheckAccount")?name=${nameinput}`;
                 const nameResponse = await fetch(nameurl);
@@ -48,6 +55,7 @@
                 if (!nameResponse.ok) throw new Error(nameResponse.status);
                 //取得name
                 const name = await nameResponse.text();
+
                 console.log(name);
 
                 if (name=="True") {
@@ -71,12 +79,12 @@
 
             //透過FormData物件讀取資料
             const formData = new FormData(theform);
-            // formData.append("city","中壢")
+
             // for (const pair of formData.entries()) {
             //     console.log(pair[0])
             //     console.log(pair[1])
             // }
-            //檢查有沒有塞進去
+            // //檢查有沒有塞進去
             
             try {
                 //將formData資料傳送到server端

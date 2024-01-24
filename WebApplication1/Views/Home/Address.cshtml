@@ -35,6 +35,7 @@
 
                 const cities = await cityResponse.json();
                 const optcities = cities.map(city => `<option value="${city}">${city}</option>`);
+                
                 selectCity.innerHTML = optcities.join("");
 
             } catch (err) {
@@ -45,6 +46,7 @@
         })();
         selectCity.addEventListener("change", async (elem) => {
             console.log(elem.target.value);
+            selectRoad.innerHTML = "";
             cityname = elem.target.value;
 
             let siteurl = '@Url.Content("~/API/Districts")'

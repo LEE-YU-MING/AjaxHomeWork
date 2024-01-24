@@ -1,0 +1,167 @@
+﻿
+@{
+    ViewData["Title"] = "Spots";
+}
+
+<h1>Spots</h1>
+<div class="row">
+    <div class="col-3">
+       <select id="pagesize">
+           
+       </select>
+    </div>
+    <div class="col-6">
+        <nav aria-label="Page navigation example">
+            <ul class="pagination">
+                <li class="page-item">
+                    <a class="page-link" href="#" aria-label="Previous">
+                        <span aria-hidden="true">&laquo;</span>
+                    </a>
+                </li>
+                <li class="page-item pageitem "><a class="page-link" href="#"><span id="span1">1</span></a></li>
+                <li class="page-item pageitem "><a class="page-link" href="#"><span id="span2">2</span></a></li>
+                <li class="page-item pageitem "><a class="page-link" href="#"><span id="span3">3</span></a></li>
+                <li class="page-item">
+                    <a class="page-link" href="#" aria-label="Next">
+                        <span aria-hidden="true">&raquo;</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+    <div class="col-3" >
+        <input type="text" id="searchtext" placeholder="景點搜尋" />
+    </div>
+</div>
+
+<div class="row row-cols-1 row-cols-md-4 g-4" id="divrow">
+   
+</div>
+<a class="rounded-pill bg-info p-3" href="#">回最上面</a>
+@section Scripts {
+
+
+<script>
+    const searchDate = {
+        "categoryId": 0,
+        "keyword": "",
+        "page": 1,
+        "pageSize": 10,
+        "sortType": "asc",
+        "sortBy": ""
+    };
+    const searchtext = document.querySelector("#searchtext");
+    const divrow = document.querySelector("#divrow");
+    const span1 = document.querySelector("#span1");
+    const span2 = document.querySelector("#span2");
+    const span3 = document.querySelector("#span3");
+    const pageitem = document.querySelectorAll(".pageitem");
+    const pagesize = document.querySelector("#pagesize");
+    let pagestring;
+    for (let i = 10; i < 21; i++) {
+            pagestring += `<option value="${i}" > 每頁${i}筆資料</option>`
+    }
+    pagesize.innerHTML = pagestring;
+
+    if (parseInt(searchDate.page) === 1) {
+    span1.parentElement.parentElement.classList.add("active");
+    }
+    let datas;
+
+        const loadSpots = async () => {
+            const response =await fetch('@Url.Content("~/API/Spots")', {
+                method:'POST',
+                body:JSON.stringify(searchDate),
+                headers: {
+                    'Content-Type':'application/json'
+                }
+            });
+
+            datas =await response.json();
+
+
+            console.log("totalPages: "+datas.totalPages);
+            totalPages = parseInt(datas.totalPages);
+            if (totalPages === 1) {
+                span2.parentElement.parentElement.classList.add("d-none");
+                span3.parentElement.parentElement.classList.add("d-none");
+            } else if (totalPages === 2) {
+                span2.parentElement.parentElement.classList.remove("d-none");
+                span3.parentElement.parentElement.classList.add("d-none");
+            } else if (totalPages > 2) {
+                span2.parentElement.parentElement.classList.remove("d-none");
+                span3.parentElement.parentElement.classList.remove("d-none");
+            }
+       
+            const cardSpots=datas.spotResult.map(spot => {
+                const {spotId,spotTitle,spotDescription,spotImage,address}= spot
+                return `<div class="col"><div class="card">
+                  <img src="${spotImage}" class="card-img-top" alt="${spotTitle}">
+                  <div class="card-body bg-info">
+                    <h5 class="card-title">Title: ${spotTitle}</h5>
+               <p class="card-text">Description: ${spotDescription.substring(0,100)}...</p>
+                  </div>
+                </div>
+              </div>`
+            
+            });
+             divrow.innerHTML=cardSpots.join("");
+
+        }
+
+        searchtext.addEventListener("keydown", elem => {
+        console.log(elem.target.value);
+        console.log(event.which)
+        console.log(elem.which)
+        if (event.which === 13) {
+            searchDate.keyword = elem.target.value
+            searchDate.page = 1;
+            loadSpots();
+        }
+    });
+        
+        pageitem.forEach(elem=>{
+            elem.addEventListener("click",()=>{
+                searchDate.page = elem.childNodes[0].innerText
+
+                searchDatapage = parseInt(searchDate.page);
+                console.log(`searchDatapage: ${searchDatapage}`);
+                
+                if (searchDatapage === 1) {
+                    span1.innerHTML = searchDatapage
+                    span2.innerHTML = searchDatapage + 1;
+                    span3.innerHTML = searchDatapage + 2;
+                    span1.parentElement.parentElement.classList.add("active");
+                    span2.parentElement.parentElement.classList.remove("active");
+                    span3.parentElement.parentElement.classList.remove("active");
+
+                } else if (searchDatapage !== 1 && searchDatapage < totalPages) {
+                    span1.innerHTML = searchDatapage - 1;
+                    span2.innerHTML = searchDatapage;
+                    span3.innerHTML = searchDatapage + 1;
+                    span2.parentElement.parentElement.classList.add("active");
+                    span1.parentElement.parentElement.classList.remove("active");
+                    span3.parentElement.parentElement.classList.remove("active");
+                } else if (searchDatapage === totalPages) {
+                    span1.innerHTML = searchDatapage - 2;
+                    span2.innerHTML = searchDatapage - 1;
+                    span3.innerHTML = searchDatapage;
+                    span1.parentElement.parentElement.classList.remove("active");
+                    span2.parentElement.parentElement.classList.remove("active");
+                    span3.parentElement.parentElement.classList.add("active");
+                }
+                loadSpots();
+            })
+               
+    })
+
+        pagesize.addEventListener("change", async (elem) => {
+            searchDate.pageSize= elem.target.value;
+            loadSpots();
+
+    })
+
+    //載入景點
+    loadSpots();
+</script>
+}
